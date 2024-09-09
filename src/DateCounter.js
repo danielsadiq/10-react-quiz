@@ -1,12 +1,31 @@
-import { useState } from "react";
+import { useReducer, useState } from "react";
 
 function DateCounter() {
   const [count, setCount] = useState(0);
+
+  const [state, dispatch] = useReducer(reducer, {count:0, step:1});
+
   const [step, setStep] = useState(1);
+
+  function reducer(state, action){
+    if (action.type === "inc"){
+      return {
+        count: state.count + state.step,
+        step: state.step};
+    }
+    if (action.type === "dec"){
+      console.log(state.count);
+      return{
+        count: state.count - state.step,
+        step: state.step,
+      };
+    }
+    throw Error("Unknown action.")
+  }
 
   // This mutates the date object.
   const date = new Date("june 21 2027");
-  date.setDate(date.getDate() + count);
+  date.setDate(date.getDate() + state.count);
 
   const dec = function () {
     // setCount((count) => count - 1);
@@ -45,9 +64,9 @@ function DateCounter() {
       </div>
 
       <div>
-        <button onClick={dec}>-</button>
-        <input value={count} onChange={defineCount} />
-        <button onClick={inc}>+</button>
+        <button onClick={() => dispatch({type:"dec"})}>-</button>
+        <input value={state.count} onChange={defineCount} />
+        <button onClick={() => dispatch({type:"inc"})}>+</button>
       </div>
 
       <p>{date.toDateString()}</p>
