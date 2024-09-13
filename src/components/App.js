@@ -12,6 +12,7 @@ import Timer from "./Timer";
 import Footer from "./Footer";
 
 const initialState = {
+    questionsBank: [],
     questions: [],
     // loading, 'error', 'ready', 'active', 'finished'
     status: "loading",
@@ -20,19 +21,37 @@ const initialState = {
     points: 0,
     highScore: 0,
     secondsRemaining: null,
+    numOfQuestion : 15,
 };
 const SECS_PER_QUESTION = 30;
 
+function getRandomElements(array, count) {
+    const shuffledArray = array.slice(); // Create a copy of the original array
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledArray[i], shuffledArray[j]] = [
+            shuffledArray[j],
+            shuffledArray[i],
+        ];
+    }
+    return shuffledArray.slice(0, count);
+}
+
 function reducer(state, action) {
-    const { questions, index } = state;
+    const { questions, index, numOfQuestion, questionsBank } = state;
 
     switch (action.type) {
         case "dataReceived":
-            return { ...state, questions: action.payload, status: "ready" };
+            return { ...state, questions: action.payload, status: "ready", questionsBank:action.payload };
         case "dataFailed":
             return { ...state, status: "error" };
         case "start":
-            return { ...state, status: "active", secondsRemaining: questions.length * SECS_PER_QUESTION };
+            return {
+                ...state,
+                status: "active",
+                secondsRemaining: numOfQuestion * SECS_PER_QUESTION,
+                questions: getRandomElements(questionsBank, numOfQuestion)
+            };
         case "newAnswer":
             return {
                 ...state,
@@ -53,11 +72,19 @@ function reducer(state, action) {
                         : state.highScore,
             };
         case "restart":
-            return { ...initialState, questions, status: "ready" };
+            return { ...initialState, questionsBank, status: "ready", questions };
         case "timer":
-            return { ...state, secondsRemaining: state.secondsRemaining - 1, status: state.secondsRemaining === 0 ? 'finished': state.status };
+            return {
+                ...state,
+                secondsRemaining: state.secondsRemaining - 1,
+                status:
+                    state.secondsRemaining === 0 ? "finished" : state.status,
+            };
 
         // return {state, secondsRemaining:state.secondsRemaining-1}
+        case "setQuestions":
+            return { ...state, numOfQuestion: action.payload };
+
         default:
             throw new Error("Action unknown");
     }

@@ -257,3 +257,21 @@ progress {
   font-size: inherit;
   padding: 0.8rem;
 }
+
+select{
+  font-family: inherit;
+  border-radius: 10rem;
+  padding: 1.2rem 3.2rem;
+  font-weight: 700;
+  font-size: 1.8rem;
+  cursor: pointer;
+  display: block;
+  font-size: 2rem;
+  color: inherit;
+  border: 2px solid var(--color-dark);
+  background-color: var(--color-dark);
+  margin-bottom: 20px;
+  min-width: 140px;
+  height: 55px;
+  margin-right: 12px;
+}
